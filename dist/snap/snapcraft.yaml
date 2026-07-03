@@ -34,8 +34,8 @@ parts:
     plugin: cmake
     source: .
     build-environment:
-      - CC: /usr/bin/gcc-14
-      - CXX: /usr/bin/g++-14
+      - CC: /usr/bin/gcc-16
+      - CXX: /usr/bin/g++-16
     cmake-parameters:
       - -DCMAKE_BUILD_TYPE=Release
       - -DIMHEX_PATTERNS_PULL_MASTER=ON
