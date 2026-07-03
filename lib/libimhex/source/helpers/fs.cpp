@@ -241,7 +241,8 @@ namespace hex::fs {
         }
 
         bool openFileBrowser(DialogMode mode, const std::vector<ItemFilter> &validExtensions, const std::function<void(std::fs::path)> &callback, const std::string &defaultPath, bool multiple) {
-            std::string fileFilter;
+            std::string fileFilter, outPath;
+
             for (const auto &extension : validExtensions) {
                 fileFilter += extension.name + " (*." + extension.spec + ")|*." + extension.spec + "|";
             }
@@ -255,11 +256,6 @@ namespace hex::fs {
             #else
             setenv("IMGUI_DIALOG_THEME", "0", 1);
             #endif
-
-            std::string outPath;
-
-            nfdwindowhandle_t windowHandle = {};
-            NFD_GetNativeWindowFromGLFWWindow(ImHexApi::System::getMainWindowHandle(), &windowHandle);
 
             // Open the correct file dialog based on the mode
             switch (mode) {
