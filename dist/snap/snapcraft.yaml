@@ -67,6 +67,7 @@ parts:
       - libwayland-bin
       - wayland-protocols
       - libx11-dev
+      - libxrandr-dev
     stage-packages:
       - libglfw3
       - libmagic1t64
