@@ -14,7 +14,6 @@
     #define GLFW_EXPOSE_NATIVE_COCOA
 #elif defined(OS_LINUX)
     #include <xdg.hpp>
-    #include <X11/Xlib.h>
     #define GLFW_EXPOSE_NATIVE_X11
     #if defined(OS_FREEBSD)
         #include <sys/syslimits.h>
