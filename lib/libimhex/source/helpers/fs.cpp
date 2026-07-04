@@ -15,9 +15,9 @@
     #define GLFW_EXPOSE_NATIVE_COCOA
 #elif defined(OS_LINUX)
     #include <xdg.hpp>
-    #if defined(OS_FREEBSD)
-        #include <sys/syslimits.h>
-    #endif
+# if defined(OS_FREEBSD)
+    #include <sys/syslimits.h>
+# endif
 #endif
 
 #if defined(OS_WEB)
