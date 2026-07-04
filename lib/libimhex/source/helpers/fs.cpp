@@ -24,6 +24,7 @@
     #include <emscripten.h>
 #else
     #include <GLFW/glfw3.h>
+    #include <GLFW/glfw3native.h>
     #include <apifiledialogs/filedialogs.hpp>
 #endif
 
@@ -233,6 +234,21 @@ namespace hex::fs {
 
         bool openFileBrowser(DialogMode mode, const std::vector<ItemFilter> &validExtensions, const std::function<void(std::fs::path)> &callback, const std::string &defaultPath, bool multiple) {
             std::string fileFilter, outPath;
+            unsigned long long nativeWindow = 0;
+
+#if defined(OS_WINDOWS)
+            nativeWindow = (unsigned long long)(void *)glfwGetWin32Window(ImHexApi::System::getMainWindowHandle());
+#elif defined(OS_MACOS)
+            nativeWindow = (unsigned long long)(void *)glfwGetCocoaWindow(ImHexApi::System::getMainWindowHandle();
+#elif defined(OS_LINUX)
+            nativeWindow = (unsigned long long)glfwGetX11Window(ImHexApi::System::getMainWindowHandle());
+#endif
+
+#if defined(OS_WINDOWS)
+            SetEnvironmentVariableW(L"IMGUI_DIALOG_PARENT", std::to_wstring(nativeWindow).c_str());
+#else
+            setenv("IMGUI_DIALOG_PARENT", std::to_string(nativeWindow).c_str(), 1);
+#endif
 
             for (const auto &extension : validExtensions) {
                 fileFilter += extension.name + " (*." + extension.spec + ")|*." + extension.spec + "|";
