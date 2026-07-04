@@ -239,15 +239,17 @@ namespace hex::fs {
 #if defined(OS_WINDOWS)
             nativeWindow = (unsigned long long)(void *)glfwGetWin32Window(ImHexApi::System::getMainWindowHandle());
 #elif defined(OS_MACOS)
-            nativeWindow = (unsigned long long)(void *)glfwGetCocoaWindow(ImHexApi::System::getMainWindowHandle();
+            nativeWindow = (unsigned long long)(void *)glfwGetCocoaWindow(ImHexApi::System::getMainWindowHandle());
 #elif defined(OS_LINUX)
             nativeWindow = (unsigned long long)glfwGetX11Window(ImHexApi::System::getMainWindowHandle());
 #endif
 
 #if defined(OS_WINDOWS)
             SetEnvironmentVariableW(L"IMGUI_DIALOG_PARENT", std::to_wstring(nativeWindow).c_str());
+            SetEnvironmentVariableW(L"IMGUI_DIALOG_NOBORDER", std::to_wstring(true).c_str());
 #else
             setenv("IMGUI_DIALOG_PARENT", std::to_string(nativeWindow).c_str(), 1);
+            setenv(L"IMGUI_DIALOG_NOBORDER", std::to_string(true).c_str(), 1);
 #endif
 
             for (const auto &extension : validExtensions) {
@@ -262,15 +264,15 @@ namespace hex::fs {
             switch (mode) {
                 case DialogMode::Open:
                     if (multiple)
-                        outPath = get_open_filenames_ext((char *)fileFilter.c_str(), (char *)"", (char *)defaultPath.c_str(), (char *)"Open File(s)");
+                        outPath = get_open_filenames_ext((char *)fileFilter.c_str(), (char *)"", (char *)defaultPath.c_str(), (char *)"");
                     else
-                        outPath = get_open_filename_ext((char *)fileFilter.c_str(), (char *)"", (char *)defaultPath.c_str(), (char *)"Open File");
+                        outPath = get_open_filename_ext((char *)fileFilter.c_str(), (char *)"", (char *)defaultPath.c_str(), (char *)"");
                     break;
                 case DialogMode::Save:
-                    outPath = get_save_filename_ext((char *)fileFilter.c_str(), (char *)"", (char *)defaultPath.c_str(), (char *)"Save As");
+                    outPath = get_save_filename_ext((char *)fileFilter.c_str(), (char *)"", (char *)defaultPath.c_str(), (char *)"");
                     break;
                 case DialogMode::Folder:
-                    outPath = get_directory_alt((char *)"Select Directory", (char *)defaultPath.c_str());
+                    outPath = get_directory_alt((char *)"", (char *)defaultPath.c_str());
                     break;
             }
 
