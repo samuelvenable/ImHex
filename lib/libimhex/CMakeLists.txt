@@ -93,11 +93,12 @@ else()
     target_compile_definitions(libimhex PRIVATE IMHEX_PROJECT_NAME="${PROJECT_NAME}")
 endif()
 
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../third_party/libdlgmod)
-execute_process(COMMAND make WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/../third_party/libdlgmod)
-target_include_directories(libimhex PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/../third_party/libdlgmod)
-target_link_directories(libimhex PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/../third_party/libdlgmod)
-target_link_libraries(libimhex PUBLIC dlgmod)
+include_directories("${CMAKE_CURRENT_SOURCE_DIR}/../third_party/libdlgmod")
+execute_process(COMMAND make WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/../third_party/libdlgmod")
+target_include_directories(libimhex PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/../third_party/libdlgmod")
+target_link_directories(libimhex PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/../third_party/libdlgmod")
+target_link_libraries(libimhex PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/../third_party/libdlgmod/libdlgmod.a")
+
 
 addCppCheck(libimhex)
 
