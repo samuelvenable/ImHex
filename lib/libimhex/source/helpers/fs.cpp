@@ -242,12 +242,6 @@ namespace hex::fs {
                 fileFilter.pop_back();
             }
 
-            #if defined(OS_WINDOWS)
-            SetEnvironmentVariableW(L"IMGUI_DIALOG_THEME", L"0");
-            #else
-            setenv("IMGUI_DIALOG_THEME", "0", 1);
-            #endif
-
             // Open the correct file dialog based on the mode
             switch (mode) {
                 case DialogMode::Open:
