@@ -97,7 +97,7 @@ include_directories("${CMAKE_CURRENT_SOURCE_DIR}/../third_party/libdlgmod")
 execute_process(COMMAND make WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/../third_party/libdlgmod")
 target_include_directories(libimhex PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/../third_party/libdlgmod")
 target_link_directories(libimhex PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/../third_party/libdlgmod")
-target_link_libraries(libimhex PUBLIC dlgmod)
+target_link_libraries(libimhex PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/../third_party/libdlgmod/libdlgmod.a")
 
 
 addCppCheck(libimhex)
