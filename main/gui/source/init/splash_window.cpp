@@ -568,9 +568,12 @@ namespace hex::init {
         {
             io.Fonts->Clear();
 
-            ImFontConfig cfg;
-            cfg.OversampleH = cfg.OversampleV = 1, cfg.PixelSnapH = true;
-            io.Fonts->AddFontDefault(&cfg);
+            ImFontConfig cfg = {};
+            cfg.PixelSnapH = true;
+            cfg.OversampleH = 2;
+            cfg.OversampleV = 1;
+            cfg.RasterizerDensity = 2.0F;
+            io.Fonts->AddFontDefaultBitmap(&cfg);
         }
 
         // Don't save window settings for the splash screen
