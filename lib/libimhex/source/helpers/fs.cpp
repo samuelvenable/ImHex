@@ -244,7 +244,7 @@ namespace hex::fs {
             nativeWindow = (unsigned long long)glfwGetX11Window(ImHexApi::System::getMainWindowHandle());
 #endif
 
-            widget_set_owner((char *)std::to_string(nativeWindow).c_str());
+            widget_set_owner(std::to_string(nativeWindow).c_str());
 
             bool initFirstSpec = false;
             for (const auto &extension : validExtensions) {
@@ -263,15 +263,15 @@ namespace hex::fs {
             switch (mode) {
                 case DialogMode::Open:
                     if (multiple)
-                        outPath = get_open_filenames_ext((char *)fileFilter.c_str(), (char *)"", (char *)defaultPath.c_str(), (char *)"Open one or more files...");
+                        outPath = get_open_filenames_ext(fileFilter.c_str(), "", defaultPath.c_str(), "Open one or more files...");
                     else
-                        outPath = get_open_filename_ext((char *)fileFilter.c_str(), (char *)"", (char *)defaultPath.c_str(), (char *)"Open a file...");
+                        outPath = get_open_filename_ext(fileFilter.c_str(), "", defaultPath.c_str(), "Open a file...");
                     break;
                 case DialogMode::Save:
-                    outPath = get_save_filename_ext((char *)fileFilter.c_str(), ((!firstSpec.empty()) ? (char *)("Untitled." + firstSpec).c_str() : (char *)"Untitled"), (char *)defaultPath.c_str(), (char *)"Save a file...");
+                    outPath = get_save_filename_ext(fileFilter.c_str(), ((!firstSpec.empty()) ? ("Untitled." + firstSpec).c_str() : "Untitled"), defaultPath.c_str(), "Save a file...");
                     break;
                 case DialogMode::Folder:
-                    outPath = get_directory_alt((char *)"Select a folder...", (char *)defaultPath.c_str());
+                    outPath = get_directory_alt("Select a folder...", defaultPath.c_str());
                     break;
             }
 
