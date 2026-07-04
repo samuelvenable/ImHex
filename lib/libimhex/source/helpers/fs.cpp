@@ -9,11 +9,15 @@
     #include <windows.h>
     #include <shlobj.h>
     #include <shellapi.h>
-#elif defined(OS_LINUX) || defined(OS_WEB)
+
+    #define GLFW_EXPOSE_NATIVE_WIN32
+#elif defined(OS_MACOS)
+    #define GLFW_EXPOSE_NATIVE_COCOA
+#elif defined(OS_LINUX)
     #include <xdg.hpp>
-# if defined(OS_FREEBSD)
-    #include <sys/syslimits.h>
-# endif
+    #if defined(OS_FREEBSD)
+        #include <sys/syslimits.h>
+    #endif
 #endif
 
 #if defined(OS_WEB)
@@ -228,7 +232,8 @@ namespace hex::fs {
         }
 
         bool openFileBrowser(DialogMode mode, const std::vector<ItemFilter> &validExtensions, const std::function<void(std::fs::path)> &callback, const std::string &defaultPath, bool multiple) {
-            std::string fileFilter;
+            std::string fileFilter, outPath;
+
             for (const auto &extension : validExtensions) {
                 fileFilter += extension.name + " (*." + extension.spec + ")|*." + extension.spec + "|";
             }
@@ -242,8 +247,6 @@ namespace hex::fs {
             #else
             setenv("IMGUI_DIALOG_THEME", "0", 1);
             #endif
-
-            std::string outPath;
 
             // Open the correct file dialog based on the mode
             switch (mode) {
