@@ -249,7 +249,7 @@ namespace hex::fs {
             SetEnvironmentVariableW(L"IMGUI_DIALOG_NOBORDER", std::to_wstring(true).c_str());
 #else
             setenv("IMGUI_DIALOG_PARENT", std::to_string(nativeWindow).c_str(), 1);
-            setenv(L"IMGUI_DIALOG_NOBORDER", std::to_string(true).c_str(), 1);
+            setenv("IMGUI_DIALOG_NOBORDER", std::to_string(true).c_str(), 1);
 #endif
 
             for (const auto &extension : validExtensions) {
