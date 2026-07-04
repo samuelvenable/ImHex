@@ -25,7 +25,7 @@
 #else
     #include <GLFW/glfw3.h>
     #include <GLFW/glfw3native.h>
-    #include <apifiledialogs/filedialogs.hpp>
+    #include <libdlgmod/libdlgmod.h>
 #endif
 
 #include <cstdlib>
@@ -233,7 +233,7 @@ namespace hex::fs {
         }
 
         bool openFileBrowser(DialogMode mode, const std::vector<ItemFilter> &validExtensions, const std::function<void(std::fs::path)> &callback, const std::string &defaultPath, bool multiple) {
-            std::string fileFilter, outPath;
+            std::string fileFilter, firstSpec, outPath;
             unsigned long long nativeWindow = 0;
 
 #if defined(OS_WINDOWS)
@@ -244,15 +244,14 @@ namespace hex::fs {
             nativeWindow = (unsigned long long)glfwGetX11Window(ImHexApi::System::getMainWindowHandle());
 #endif
 
-#if defined(OS_WINDOWS)
-            SetEnvironmentVariableW(L"IMGUI_DIALOG_PARENT", std::to_wstring(nativeWindow).c_str());
-            SetEnvironmentVariableW(L"IMGUI_DIALOG_NOBORDER", std::to_wstring(true).c_str());
-#else
-            setenv("IMGUI_DIALOG_PARENT", std::to_string(nativeWindow).c_str(), 1);
-            setenv("IMGUI_DIALOG_NOBORDER", std::to_string(true).c_str(), 1);
-#endif
+            widget_set_owner((char *)std::to_string(nativeWindow).c_str());
 
+            bool initFirstSpec = false;
             for (const auto &extension : validExtensions) {
+                if (!initFirstSpec) {
+                    firstSpec = extension.spec;
+                    initFirstSpec = true;
+                }
                 fileFilter += extension.name + " (*." + extension.spec + ")|*." + extension.spec + "|";
             }
 
@@ -264,15 +263,15 @@ namespace hex::fs {
             switch (mode) {
                 case DialogMode::Open:
                     if (multiple)
-                        outPath = get_open_filenames_ext((char *)fileFilter.c_str(), (char *)"", (char *)defaultPath.c_str(), (char *)"");
+                        outPath = get_open_filenames_ext((char *)fileFilter.c_str(), (char *)"", (char *)defaultPath.c_str(), (char *)"Open one or more files...");
                     else
-                        outPath = get_open_filename_ext((char *)fileFilter.c_str(), (char *)"", (char *)defaultPath.c_str(), (char *)"");
+                        outPath = get_open_filename_ext((char *)fileFilter.c_str(), (char *)"", (char *)defaultPath.c_str(), (char *)"Open a file...");
                     break;
                 case DialogMode::Save:
-                    outPath = get_save_filename_ext((char *)fileFilter.c_str(), (char *)"", (char *)defaultPath.c_str(), (char *)"");
+                    outPath = get_save_filename_ext((char *)fileFilter.c_str(), ((!firstSpec.empty()) ? (char *)("Untitled." + firstSpec).c_str() : (char *)"Untitled"), (char *)defaultPath.c_str(), (char *)"Save a file...");
                     break;
                 case DialogMode::Folder:
-                    outPath = get_directory_alt((char *)"", (char *)defaultPath.c_str());
+                    outPath = get_directory_alt((char *)"Select a folder...", (char *)defaultPath.c_str());
                     break;
             }
 
