@@ -222,16 +222,6 @@ namespace hex::fs {
 
     #else
 
-        static std::vector<std::string> string_split(std::string str, char delimiter) {
-            std::vector<std::string> vec;
-            std::stringstream sstr(str);
-            std::string tmp;
-            while (getline(sstr, tmp, delimiter)) {
-                vec.push_back(tmp);
-            }
-            return vec;
-        }
-
         bool openFileBrowser(DialogMode mode, const std::vector<ItemFilter> &validExtensions, const std::function<void(std::fs::path)> &callback, const std::string &defaultPath, bool multiple) {
             std::string fileFilter, firstSpec, outPath;
             unsigned long long nativeWindow = 0;
@@ -284,7 +274,7 @@ namespace hex::fs {
 
                 // Handle multiple paths if the dialog was opened in multiple mode
                 if (outPath.find('\n') != std::string::npos) {
-                    std::vector<std::string> outPaths = string_split(outPath, '\n');
+                    std::vector<std::string> outPaths = wolv::util::splitString(outPath, "\n");
                     // Loop over all returned paths and call the callback with each of them
                     for (size_t i = 0; i < outPaths.size(); i++) {
                         callback(outPaths[i]);
