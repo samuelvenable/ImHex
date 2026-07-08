@@ -381,18 +381,22 @@ namespace hex::ui {
         }
 
         if (m_editingAddress != address || m_editingCellType != cellType) {
-            if (cellType == CellType::Hex) {
-                std::array<u8, 32> buffer = {};
-                std::memcpy(buffer.data(), data, std::min(size, buffer.size()));
-
-                if (m_dataVisualizerEndianness != std::endian::native)
-                    std::reverse(buffer.begin(), buffer.begin() + size);
-
-                m_currDataVisualizer->draw(address, buffer.data(), size, m_upperCaseHex);
-
+            if (address == m_provider->getBaseAddress() + m_provider->getActualSize()) {
+                ImGui::TextUnformatted("  ");
             } else {
-                asciiVisualizer.enableExtendedAscii(m_showExtendedAscii);
-                asciiVisualizer.draw(address, data, size, m_upperCaseHex);
+                if (cellType == CellType::Hex) {
+                    std::array<u8, 32> buffer = {};
+                    std::memcpy(buffer.data(), data, std::min(size, buffer.size()));
+
+                    if (m_dataVisualizerEndianness != std::endian::native)
+                        std::reverse(buffer.begin(), buffer.begin() + size);
+
+                    m_currDataVisualizer->draw(address, buffer.data(), size, m_upperCaseHex);
+
+                } else {
+                    asciiVisualizer.enableExtendedAscii(m_showExtendedAscii);
+                    asciiVisualizer.draw(address, data, size, m_upperCaseHex);
+                }
             }
 
             if (hovered && m_provider->isWritable()) {
@@ -468,7 +472,7 @@ namespace hex::ui {
                     auto nextEditingAddress = *m_editingAddress + m_currDataVisualizer->getBytesPerCell();
                     this->setSelection(nextEditingAddress, nextEditingAddress);
 
-                    if (nextEditingAddress >= m_provider->getBaseAddress() + m_provider->getCurrentPageAddress() + m_provider->getSize())
+                    if (m_mode == Mode::Overwrite && nextEditingAddress >= m_provider->getBaseAddress() + m_provider->getCurrentPageAddress() + m_provider->getSize())
                         m_editingAddress = std::nullopt;
                     else {
                         m_editingAddress = nextEditingAddress;
@@ -658,6 +662,9 @@ namespace hex::ui {
                         maxAddress += m_provider->getBaseAddress() + m_provider->getCurrentPageAddress();
                     else
                         maxAddress = std::numeric_limits<u64>::max();
+
+                    if (m_mode == Mode::Insert)
+                        maxAddress += 1;
                 }
 
                 ImGui::TableSetupColumn("hex.ui.common.address"_lang, ImGuiTableColumnFlags_WidthFixed,
@@ -704,7 +711,11 @@ namespace hex::ui {
                 ImGui::TableNextColumn();
 
                 if (m_provider != nullptr && m_provider->isReadable()) {
-                    const auto isCurrRegionValid = [this](u64 address) {
+                    const auto isCurrRegionValid = [this, maxAddress](u64 address) {
+                        if (m_mode == Mode::Insert && address == maxAddress) {
+                            return true;
+                        }
+
                         auto &[currRegion, currRegionValid] = m_currValidRegion;
                         if (!Region{ .address=address, .size=1 }.isWithin(currRegion)) {
                             m_currValidRegion = m_provider->getRegionValidity(address);
@@ -746,8 +757,7 @@ namespace hex::ui {
                         ImGui::TableNextColumn();
                         addressWidth = ImGui::GetCursorPosX() - addressWidth;
 
-                        const u8 validBytes = std::min<u64>(bytesPerRow, m_provider->getSize() - y * bytesPerRow);
-
+                        u8 validBytes = std::min<u64>(bytesPerRow, m_provider->getSize() - y * bytesPerRow);
                         m_provider->read(y * bytesPerRow + m_provider->getBaseAddress() + m_provider->getCurrentPageAddress(), bytes.data(), validBytes);
 
                         {
@@ -789,6 +799,9 @@ namespace hex::ui {
 
                         // Draw byte columns
                         ImGui::PushStyleVar(ImGuiStyleVar_CellPadding, scaled(ImVec2(2.75F, 0.0F)));
+
+                        if (m_mode == Mode::Insert)
+                            validBytes += 1;
 
                         const auto maxCharsPerCell = m_currDataVisualizer->getMaxCharsPerCell();
                         auto byteCellSize = (CharacterSize * ImVec2(maxCharsPerCell, 1)) + (ImVec2(2, 2) * ImGui::GetStyle().CellPadding) + scaled(ImVec2(1 + m_byteCellPadding, 0));
@@ -855,7 +868,7 @@ namespace hex::ui {
                                 if (isCurrRegionValid(byteAddress))
                                     this->drawCell(byteAddress, &bytes[x * bytesPerCell], bytesPerCell, cellHovered, CellType::Hex);
                                 else
-                                    ImGuiExt::TextFormatted("{:?>{}}", "", maxCharsPerCell);
+                                    ImGuiExt::TextFormatted(fmt::format("{{:{}>{{}}}}", m_unknownDataCharacter), "", maxCharsPerCell);
 
                                 if (cellHovered) {
                                     Region newHoveredCell = { .address=byteAddress, .size=bytesPerCell };
@@ -918,10 +931,10 @@ namespace hex::ui {
                                         ImGui::SetCursorPosX(ImGui::GetCursorPosX() + (m_characterCellPadding * 1_scaled) / 2);
                                         ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(0, 0));
                                         ImGui::PushItemWidth(CharacterSize.x);
-                                        if (!isCurrRegionValid(byteAddress))
-                                            ImGuiExt::TextFormattedDisabled("{}", m_unknownDataCharacter);
-                                        else
+                                        if (isCurrRegionValid(byteAddress))
                                             this->drawCell(byteAddress, &bytes[x], 1, cellHovered, CellType::ASCII);
+                                        else
+                                            ImGuiExt::TextFormattedDisabled("{}", m_unknownDataCharacter);
 
                                         if (cellHovered) {
                                             Region newHoveredCell = { .address=byteAddress, .size=bytesPerCell };
@@ -1386,7 +1399,7 @@ namespace hex::ui {
                 this->scrollToSelection();
             }
             else if (ImGui::IsMouseDown(ImGuiMouseButton_Left) || (ImGui::IsMouseDown(ImGuiMouseButton_Right) && (address < std::min(m_selectionStart, m_selectionEnd) || address > std::max(m_selectionStart, m_selectionEnd)))) {
-                if (ImGui::GetIO().KeyShift)
+                if (ImGui::GetIO().KeyShift && m_mode != Mode::Insert)
                     this->setSelection(selectionStart.value_or(address), endAddress);
                 else
                     this->setSelection(address, endAddress);

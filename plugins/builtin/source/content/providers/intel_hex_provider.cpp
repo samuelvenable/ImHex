@@ -239,6 +239,9 @@ namespace hex::plugin::builtin {
         m_dataValid = true;
 
         TaskManager::doLater([this] {
+            if (m_memoryRegions.empty())
+                return;
+
             // Jump to first region after loading all regions
             auto [region, _] = m_memoryRegions.front();
             ImHexApi::HexEditor::setSelection(region.getStartAddress(), 1);
