@@ -500,6 +500,9 @@ namespace hex::plugin::builtin {
             auto selection = getSelection();
             auto cursor = m_hexEditor.getCursorPosition();
 
+            if (m_hexEditor.getMode() == ui::HexEditor::Mode::Insert)
+                return;
+
             if (cursor != selection.getStartAddress()) {
                 auto newCursor = std::max<u64>(cursor.value_or(selection.getEndAddress()), m_hexEditor.getBytesPerRow()) - m_hexEditor.getBytesPerRow();
                 setSelection(selection.getStartAddress(), newCursor);
@@ -515,6 +518,9 @@ namespace hex::plugin::builtin {
         ShortcutManager::addShortcut(this, SHIFT + Keys::Down, "hex.builtin.view.hex_editor.shortcut.selection_down", [this] {
             auto selection = getSelection();
             auto cursor = m_hexEditor.getCursorPosition();
+
+            if (m_hexEditor.getMode() == ui::HexEditor::Mode::Insert)
+                return;
 
             if (cursor != selection.getStartAddress()) {
                 auto newCursor = cursor.value_or(selection.getEndAddress()) + m_hexEditor.getBytesPerRow();
@@ -532,6 +538,9 @@ namespace hex::plugin::builtin {
             auto selection = getSelection();
             auto cursor = m_hexEditor.getCursorPosition();
 
+            if (m_hexEditor.getMode() == ui::HexEditor::Mode::Insert)
+                return;
+
             if (cursor != selection.getStartAddress()) {
                 auto newCursor = cursor.value_or(selection.getEndAddress()) - m_hexEditor.getBytesPerCell();
                 setSelection(selection.getStartAddress(), newCursor);
@@ -547,6 +556,9 @@ namespace hex::plugin::builtin {
         ShortcutManager::addShortcut(this, SHIFT + Keys::Right, "hex.builtin.view.hex_editor.shortcut.selection_right", [this] {
             auto selection = getSelection();
             auto cursor = m_hexEditor.getCursorPosition();
+
+            if (m_hexEditor.getMode() == ui::HexEditor::Mode::Insert)
+                return;
 
             if (cursor != selection.getStartAddress()) {
                 auto newCursor = cursor.value_or(selection.getEndAddress()) + m_hexEditor.getBytesPerCell();
@@ -564,6 +576,9 @@ namespace hex::plugin::builtin {
             auto selection = getSelection();
             auto cursor = m_hexEditor.getCursorPosition().value_or(selection.getEndAddress());
 
+            if (m_hexEditor.getMode() == ui::HexEditor::Mode::Insert)
+                return;
+
             if (cursor != selection.getStartAddress()) {
                 auto newCursor = std::max<u64>(cursor, m_hexEditor.getBytesPerRow()) - m_hexEditor.getBytesPerRow() * m_hexEditor.getVisibleRowCount();
                 setSelection(selection.getStartAddress(), newCursor);
@@ -579,6 +594,9 @@ namespace hex::plugin::builtin {
         ShortcutManager::addShortcut(this, SHIFT + Keys::PageDown, "hex.builtin.view.hex_editor.shortcut.selection_page_down", [this] {
             auto selection = getSelection();
             auto cursor = m_hexEditor.getCursorPosition().value_or(selection.getEndAddress());
+
+            if (m_hexEditor.getMode() == ui::HexEditor::Mode::Insert)
+                return;
 
             if (cursor != selection.getStartAddress()) {
                 auto newCursor = cursor + (m_hexEditor.getBytesPerRow() * m_hexEditor.getVisibleRowCount());
