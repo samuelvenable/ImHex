@@ -24,7 +24,9 @@
 
 #if defined(OS_WINDOWS)
     #include <windows.h>
-#elif defined(OS_MACOS) || (defined(OS_LINUX) && !defined(OS_FREEBSD))
+#elif defined(OS_FREEBSD)
+    #include <sys/extattr.h>
+#elif defined(OS_MACOS) || defined(OS_LINUX)
     #include <sys/xattr.h>
 #endif
 
@@ -157,7 +159,7 @@ namespace hex::plugin::builtin {
             result.emplace_back("hex.builtin.provider.file.modification"_lang,  modificationTime);
         }
 
-        #if defined(OS_MACOS) || (defined(OS_LINUX) && !defined(OS_FREEBSD))
+        #if defined(OS_MACOS) || defined(OS_LINUX)
 
             constexpr static auto getxattrs = [](const char *path, char *list, size_t size) -> ssize_t {
                 #if defined(OS_LINUX)
@@ -326,12 +328,14 @@ namespace hex::plugin::builtin {
                     if (!m_data.empty()) {
                         m_changeTracker = wolv::io::ChangeTracker(m_file);
                         m_changeTracker.startTracking([this]{ this->handleFileChange(); });
-                        m_file.close();
                         m_loadedIntoMemory = true;
                     }
                 }
             }
         }
+
+        if (m_loadedIntoMemory)
+            m_file.close();
 
         m_changeEventAcknowledgementPending = false;
 

@@ -103,7 +103,7 @@ namespace hex::plugin::builtin {
             const auto stackSize = undoStack.getAppliedOperations().size();
             const auto savedStackSize = m_savedOperations.get(provider);
 
-            m_modifiedAddresses->clear();
+            m_modifiedAddresses.get(provider).clear();
             if (stackSize == savedStackSize) {
                 // Do nothing
             } else if (stackSize > savedStackSize) {
@@ -113,7 +113,7 @@ namespace hex::plugin::builtin {
 
                     auto region = operation->getRegion();
                     for (u64 addr = region.getStartAddress(); addr <= region.getEndAddress(); addr++) {
-                        m_modifiedAddresses->insert(addr);
+                        m_modifiedAddresses.get(provider).insert(addr);
                     }
                 }
             } else {
@@ -123,7 +123,7 @@ namespace hex::plugin::builtin {
 
                     auto region = operation->getRegion();
                     for (u64 addr = region.getStartAddress(); addr <= region.getEndAddress(); addr++) {
-                        m_modifiedAddresses->insert(addr);
+                        m_modifiedAddresses.get(provider).insert(addr);
                     }
                 }
             }

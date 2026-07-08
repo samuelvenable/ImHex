@@ -131,6 +131,9 @@ namespace hex::ui {
             u64 size = m_provider->getActualSize();
             u64 baseAddress = m_provider->getBaseAddress();
 
+            if (m_mode == Mode::Insert)
+                size += 1;
+
             if (size == 0 || size - 1 > std::numeric_limits<u64>::max() - baseAddress)
                 return;
 
