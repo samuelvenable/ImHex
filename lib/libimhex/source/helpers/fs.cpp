@@ -238,7 +238,7 @@ namespace hex::fs {
 
             bool initFirstSpec = false;
             size_t validExtensionsSize = validExtensions.size();
-            for (size_t i = 0; i < validExtensionsSize; i++;) {
+            for (size_t i = 0; i < validExtensionsSize; i++) {
                 if (!initFirstSpec) {
                     firstSpec = validExtensions[i].spec;
                     initFirstSpec = true;
