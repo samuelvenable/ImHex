@@ -237,16 +237,16 @@ namespace hex::fs {
             widget_set_owner(std::to_string(nativeWindow).c_str());
 
             bool initFirstSpec = false;
-            for (const auto &extension : validExtensions) {
+            size_t validExtensionsSize = validExtensions.size();
+            for (size_t i = 0; i < validExtensionsSize; i++;) {
                 if (!initFirstSpec) {
-                    firstSpec = extension.spec;
+                    firstSpec = validExtensions[i].spec;
                     initFirstSpec = true;
                 }
-                fileFilter += extension.name + " (*." + extension.spec + ")|*." + extension.spec + "|";
-            }
-
-            if (!fileFilter.empty()) {
-                fileFilter.pop_back();
+                fileFilter += validExtensions[i].name + " (*." + validExtensions[i].spec + ")|*." + validExtensions[i].spec;
+                if (i < validExtensionsSize - 1) {
+                    fileFilter += "|";
+                }
             }
 
             // Open the correct file dialog based on the mode
@@ -274,7 +274,7 @@ namespace hex::fs {
 
                 // Handle multiple paths if the dialog was opened in multiple mode
                 if (outPath.find('\n') != std::string::npos) {
-                    std::vector<std::string> outPaths = wolv::util::splitString(outPath, "\n");
+                    std::vector<std::string> outPaths = wolv::util::splitString(outPath, "\n", true);
                     // Loop over all returned paths and call the callback with each of them
                     for (size_t i = 0; i < outPaths.size(); i++) {
                         callback(outPaths[i]);
