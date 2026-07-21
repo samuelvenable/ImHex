@@ -51,10 +51,10 @@ namespace hex::init {
         bool result = true;
 
         // Try to create all default directories
-        for (auto path : paths::All) {
-            for (auto &folder : path->write()) {
+        for (const auto &path : paths::All) {
+            for (auto &folder : path->all()) {
                 try {
-                    if (isSubPathWritable(folder.parent_path())) {
+                    if (!wolv::io::fs::exists(folder.parent_path()) || isSubPathWritable(folder.parent_path())) {
                         if (wolv::io::fs::exists(folder) || wolv::io::fs::createDirectories(folder))
                             break;
                     }

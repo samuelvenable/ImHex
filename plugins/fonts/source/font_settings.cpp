@@ -287,7 +287,10 @@ namespace hex::fonts {
     }
 
     [[nodiscard]] float FontSelector::getFontSize() const {
-        return ImHexApi::Fonts::pointsToPixels(m_fontSize.getValue());
+        constexpr float LogicalDpi = 96.0F;
+        constexpr float PointsPerInch = 72.0F;
+
+        return m_fontSize.getValue() * (LogicalDpi / PointsPerInch);
     }
 
     [[nodiscard]] bool FontSelector::isBold() const {

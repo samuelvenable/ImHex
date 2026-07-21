@@ -505,7 +505,7 @@ namespace hex::plugin::builtin {
             ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0F, 0.0F));
             ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(0.0F, 0.0F));
             if (ImGui::BeginChild("##pattern_editor_resizer", defaultEditorSize, ImGuiChildFlags_ResizeY)) {
-                m_textEditor.get(provider).render("##pattern_editor", ImGui::GetContentRegionAvail(), false);
+                m_textEditor.get(provider).render("##pattern_editor", ImGui::GetContentRegionAvail(), true);
                 m_textEditorHoverBox = ImGui::GetCurrentWindow()->Rect();
             }
             ImGui::EndChild();
@@ -1480,7 +1480,7 @@ namespace hex::plugin::builtin {
                 m_textEditor.get(provider).setTextChanged(false);
                 m_hasUnparsedChanges.get(provider) = true;
                 m_lastEditorChangeTime = std::chrono::steady_clock::now();
-                ImHexApi::Provider::markDirty();
+                ImHexApi::Provider::markMetadataDirty();
                 markPatternFileDirty(provider);
             }
 
