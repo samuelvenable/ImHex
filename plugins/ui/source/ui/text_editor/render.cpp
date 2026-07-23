@@ -307,7 +307,6 @@ namespace hex::ui {
 
         ImGui::PushStyleColor(ImGuiCol_ScrollbarBg, ImGui::ColorConvertFloat4ToU32(scrollBg));
         ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(0, 0));
-        ImGui::PushStyleVar(ImGuiStyleVar_ScrollbarRounding, 0);
         ImGui::PushStyleVar(ImGuiStyleVar_ScrollbarSize, scrollBarSize);
 
         m_lines.m_lineNumbersStartPos = ImGui::GetCursorScreenPos();
@@ -337,6 +336,19 @@ namespace hex::ui {
         ImGuiWindowFlags windowFlags = ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoMove;
         if (!m_lines.m_ignoreImGuiChild)
             ImGui::BeginChild(title, textEditorSize, childFlags, windowFlags);
+
+        ImGui::PopStyleColor();
+        if (m_handleKeyboardInputs) {
+            handleKeyboardInputs();
+        }
+
+        if (m_handleMouseInputs)
+            handleMouseInputs();
+
+        if (m_lines.m_colorizerEnabled)
+            m_lines.colorizeInternal();
+        renderText(textEditorSize);
+
         auto window = ImGui::GetCurrentWindow();
         window->ScrollbarSizes = ImVec2(scrollBarSize * scroll_x, scrollBarSize * scroll_y);
         ImGui::GetCurrentWindowRead()->ScrollbarSizes = ImVec2(scrollBarSize * scroll_y, scrollBarSize * scroll_x);
@@ -350,22 +362,11 @@ namespace hex::ui {
             ImGui::Scrollbar(ImGuiAxis_X);
             ImGui::GetCurrentWindow()->ScrollbarX = false;
         }
-        ImGui::PopStyleColor();
-        if (m_handleKeyboardInputs) {
-            handleKeyboardInputs();
-        }
-
-        if (m_handleMouseInputs)
-            handleMouseInputs();
-
-        if (m_lines.m_colorizerEnabled)
-            m_lines.colorizeInternal();
-        renderText(textEditorSize);
 
         if (!m_lines.m_ignoreImGuiChild)
             ImGui::EndChild();
 
-        ImGui::PopStyleVar(3);
+        ImGui::PopStyleVar(2);
         ImGui::PopStyleColor();
 
         ImGui::SetCursorScreenPos(ImVec2(m_lines.m_lineNumbersStartPos.x, m_lines.m_lineNumbersStartPos.y + size.y - 1));

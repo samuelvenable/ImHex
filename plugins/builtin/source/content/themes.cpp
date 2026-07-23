@@ -16,9 +16,15 @@
 namespace hex::plugin::builtin {
 
     void registerThemeHandlers() {
-        RequestInitThemeHandlers::subscribe([] {
+        RequestInitThemeHandlers::subscribe([
+            ImGuiColorMap      = ThemeManager::ColorMap(),
+            ImPlotColorMap     = ThemeManager::ColorMap(),
+            ImNodesColorMap    = ThemeManager::ColorMap(),
+            ImHexColorMap      = ThemeManager::ColorMap(),
+            TextEditorColorMap = ThemeManager::ColorMap()
+        ] mutable {
             {
-                const static ThemeManager::ColorMap ImGuiColorMap = {
+                ImGuiColorMap = {
                     { "text",                           ImGuiCol_Text                   },
                     { "text-disabled",                  ImGuiCol_TextDisabled           },
                     { "window-background",              ImGuiCol_WindowBg               },
@@ -93,7 +99,7 @@ namespace hex::plugin::builtin {
             }
 
             {
-                const static ThemeManager::ColorMap ImPlotColorMap = {
+                ImPlotColorMap = {
                     { "line",               ImPlotCol_Line              },
                     { "fill",               ImPlotCol_Fill              },
                     { "marker-outline",     ImPlotCol_MarkerOutline     },
@@ -128,7 +134,7 @@ namespace hex::plugin::builtin {
             }
 
             {
-                const static ThemeManager::ColorMap ImNodesColorMap = {
+                ImNodesColorMap = {
                     { "node-background",                    ImNodesCol_NodeBackground                   },
                     { "node-background-hovered",            ImNodesCol_NodeBackgroundHovered            },
                     { "node-background-selected",           ImNodesCol_NodeBackgroundSelected           },
@@ -171,7 +177,7 @@ namespace hex::plugin::builtin {
             }
 
             {
-                const static ThemeManager::ColorMap ImHexColorMap = {
+                ImHexColorMap = {
                     { "desc-button",                ImGuiCustomCol_DescButton                   },
                     { "desc-button-hovered",        ImGuiCustomCol_DescButtonHovered            },
                     { "desc-button-active",         ImGuiCustomCol_DescButtonActive             },
@@ -217,7 +223,7 @@ namespace hex::plugin::builtin {
                 );
             }
             {
-                const static ThemeManager::ColorMap TextEditorColorMap = {
+                TextEditorColorMap = {
                     { "attribute",                  u32(ui::TextEditor::PaletteIndex::Attribute)                },
                     { "background",                 u32(ui::TextEditor::PaletteIndex::Background)               },
                     { "breakpoint",                 u32(ui::TextEditor::PaletteIndex::Breakpoint)               },
@@ -280,10 +286,15 @@ namespace hex::plugin::builtin {
     }
 
     void registerStyleHandlers() {
-        RequestInitThemeHandlers::subscribe([] {
+        RequestInitThemeHandlers::subscribe([
+            ImGuiStyleMap   = ThemeManager::StyleMap(),
+            ImPlotStyleMap  = ThemeManager::StyleMap(),
+            ImNodesStyleMap = ThemeManager::StyleMap(),
+            ImHexStyleMap   = ThemeManager::StyleMap()
+        ] mutable  {
             {
                 auto &style = ImGui::GetStyle();
-                const static ThemeManager::StyleMap ImGuiStyleMap = {
+                ImGuiStyleMap = {
                     { "alpha",                                  { .value=&style.Alpha,                             .min=0.1F,    .max=1.0F,    .needsScaling=false } },
                     { "disabled-alpha",                         { .value=&style.DisabledAlpha,                     .min=0.0F,    .max=1.0F,    .needsScaling=false } },
                     { "window-padding",                         { .value=&style.WindowPadding,                     .min=0.0F,    .max=20.0F,   .needsScaling=true  } },
@@ -340,7 +351,7 @@ namespace hex::plugin::builtin {
 
             {
                 auto &style = ImPlot::GetStyle();
-                const static ThemeManager::StyleMap ImPlotStyleMap = {
+                ImPlotStyleMap = {
                         { "line-weight",            { .value=&style.LineWeight,         .min=0.0F, .max=5.0F,    .needsScaling=true  } },
                         { "marker-size",            { .value=&style.MarkerSize,         .min=2.0F, .max=10.0F,   .needsScaling=true  } },
                         { "marker-weight",          { .value=&style.MarkerWeight,       .min=0.0F, .max=5.0F,    .needsScaling=true  } },
@@ -374,7 +385,7 @@ namespace hex::plugin::builtin {
 
             {
                 auto &style = ImNodes::GetStyle();
-                const static ThemeManager::StyleMap ImNodesStyleMap = {
+                ImNodesStyleMap = {
                         { "grid-spacing",                  { .value=&style.GridSpacing,               .min=0.0F,    .max=100.0F, .needsScaling=true } },
                         { "node-corner-rounding",          { .value=&style.NodeCornerRounding,        .min=0.0F,    .max=12.0F,  .needsScaling=true } },
                         { "node-padding",                  { .value=&style.NodePadding,               .min=0.0F,    .max=20.0F,  .needsScaling=true } },
@@ -397,7 +408,7 @@ namespace hex::plugin::builtin {
 
             {
                 auto &style = ImGuiExt::GetCustomStyle();
-                const static ThemeManager::StyleMap ImHexStyleMap = {
+                ImHexStyleMap = {
                         { "window-blur",    { .value=&style.WindowBlur,    .min=0.0F,   .max=1.0F,   .needsScaling=true } },
                         { "popup-alpha",            { .value=&style.PopupWindowAlpha,          .min=0.0F,   .max=1.0F,    .needsScaling=false } },
                 };
