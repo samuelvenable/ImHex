@@ -248,7 +248,7 @@
             ],
             "indent-spacing": 21.0,
             "columns-min-spacing": 6.0,
-            "scrollbar-size": 14.0,
+            "scrollbar-size": 10.0,
             "scrollbar-rounding": 9.0,
             "grab-min-size": 12.0,
             "grab-rounding": 0.0,

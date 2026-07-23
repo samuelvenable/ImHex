@@ -641,8 +641,6 @@ namespace hex::ui {
         ImGui::PushID(bytesPerRow);
         ON_SCOPE_EXIT { ImGui::PopID(); };
         if (ImGui::BeginChild("Hex View", size, ImGuiChildFlags_None, ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse)) {
-            this->drawScrollbar(CharacterSize);
-
             ImGui::PushStyleVar(ImGuiStyleVar_CellPadding, ImVec2(0.5, 0));
             if (ImGui::BeginTable("##hex", byteColumnCount, ImGuiTableFlags_SizingFixedFit | ImGuiTableFlags_NoKeepColumnsVisible, size)) {
                 View::discardNavigationRequests();
@@ -1114,6 +1112,8 @@ namespace hex::ui {
                 ImGui::EndTable();
                 ImGui::PopStyleVar();
             }
+
+            this->drawScrollbar(CharacterSize);
         }
         ImGui::EndChild();
 
@@ -1157,7 +1157,7 @@ namespace hex::ui {
             ImGui::Dummy({});
             if (ImGui::BeginTable("##footer_table", 3, ImGuiTableFlags_SizingFixedFit)) {
                 ImGui::TableSetupColumn("Left", ImGuiTableColumnFlags_WidthStretch, 0.5F);
-                ImGui::TableSetupColumn("Center", ImGuiTableColumnFlags_WidthFixed, 20_scaled);
+                ImGui::TableSetupColumn("Center", ImGuiTableColumnFlags_WidthFixed, 25_scaled);
                 ImGui::TableSetupColumn("Right", ImGuiTableColumnFlags_WidthStretch, 0.5F);
                 ImGui::TableNextRow();
 

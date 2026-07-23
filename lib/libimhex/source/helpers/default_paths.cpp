@@ -1,6 +1,8 @@
 #include <algorithm>
 #include <hex/helpers/default_paths.hpp>
 
+#include "hex/helpers/utils.hpp"
+
 #include <hex/api/imhex_api/system.hpp>
 #include <hex/api/project_file_manager.hpp>
 
@@ -110,13 +112,6 @@ namespace hex::paths {
     }
 
     static std::vector<std::fs::path> getPluginPaths() {
-        // If running from an AppImage, only allow loaded plugins from inside it
-        #if defined(OS_LINUX)
-        if(const char* appdir = std::getenv("APPDIR")) { // check for AppImage environment
-            return {std::string(appdir) + "/usr/lib/imhex"};
-        }
-        #endif
-
         std::vector<std::fs::path> paths = getDataPaths(true);
 
         // Add the system plugin directory to the path if one was provided at compile time
@@ -168,7 +163,19 @@ namespace hex::paths {
         }
 
         std::vector<std::fs::path> PluginPath::all() const {
-            return appendPath(getPluginPaths(), m_postfix);
+            auto paths =  getPluginPaths();
+
+            // If LD_LIBRARY_PATH was set, load plugins relative to those
+            #if defined(OS_LINUX)
+                const auto loadLibraryPaths = hex::getEnvironmentVariable("LD_LIBRARY_PATH");
+                if (loadLibraryPaths.has_value()) {
+                    for (const auto &ldLibraryPath : wolv::util::splitString(loadLibraryPaths.value(), ":")) {
+                        paths.emplace_back(std::fs::path(ldLibraryPath) / "imhex");
+                    }
+                }
+            #endif
+
+            return appendPath(paths, m_postfix);
         }
 
     }
